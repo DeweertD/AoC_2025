@@ -1,0 +1,6 @@
+[package]
+name = "Day1"
+edition = "2024"
+version = "0.1.0"
+[dev-dependencies]
+rstest.workspace = true

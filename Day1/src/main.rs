@@ -93,7 +93,7 @@ use std::iter::Map;
 use std::str::Lines;
 
 fn main() {
-    let file = std::fs::read_to_string("input.txt").expect("file not found or read");
+    let file = std::fs::read_to_string("Day1/input.txt").expect("file not found or read");
     println!("Day 1 Part 1: {}", part1(read_values(&file)));
     println!("Day 1 Part 2: {}", part2(read_values(&file)));
 }

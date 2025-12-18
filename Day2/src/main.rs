@@ -46,17 +46,61 @@ fn main() {
     // println!("Day 2 Part 2: {}", part2(read_values(&file)));
 }
 
-fn part1(values: Map<str::Split<'_, char>, fn(&str) -> (&str, &str)>) -> i32 {
-    values.for_each(|f| println!("{:?}", f));
-    0
+fn part1(values: Map<str::Split<'_, char>, fn(&str) -> (u64, u64)>) -> u64 {
+    let mut invalid_id_accumulator = 0;
+    values.for_each(|(lower, upper)| {
+        let mut lower_half = 0;
+        let mut upper_half = 0;
+
+        for i in 0..=1 {
+            let lower_zeros = (count_digits(lower) / 2) + i;
+            let lower_divisor = 10u64.pow(lower_zeros) + 1;
+            lower_half = (lower as f64 / lower_divisor as f64).ceil() as u64;
+            if lower_half <= lower_divisor {
+                break;
+            };
+        }
+
+        for i in 0..1 {
+            let upper_zeros = (count_digits(upper) / 2) + i;
+            let upper_divisor = 10u64.pow(upper_zeros) + 1;
+            upper_half = (upper as f64 / upper_divisor as f64).floor() as u64;
+            if upper_half <= upper_divisor {
+                break;
+            };
+        }
+
+        for i in lower_half..=upper_half {
+            let doubling_factor = 10u64.pow(count_digits(i)) + 1;
+            let invalid_id = i * doubling_factor;
+            if invalid_id < lower {
+                continue;
+            }
+            if invalid_id > upper {
+                break;
+            }
+            invalid_id_accumulator += invalid_id;
+        }
+    });
+    invalid_id_accumulator
 }
 
-fn _part2(_values: Map<str::Split<'_, char>, fn(&str) -> (&str, &str)>) -> i32 {
+fn _part2(_values: Map<str::Split<'_, char>, fn(&str) -> (u64, u64)>) -> i32 {
     todo!()
 }
 
-fn read_values(file: &String) -> Map<str::Split<'_, char>, fn(&str) -> (&str, &str)> {
-    file.split(',').map(|range| range.split_once('-').unwrap())
+fn read_values(file: &String) -> Map<str::Split<'_, char>, fn(&str) -> (u64, u64)> {
+    file.split(',').map(|range| {
+        let str_tuple = range.split_once('-').unwrap();
+        (
+            str_tuple.0.parse::<u64>().unwrap(),
+            str_tuple.1.parse::<u64>().unwrap(),
+        )
+    })
+}
+
+fn count_digits(num: u64) -> u32 {
+    1 + num.abs_diff(0).checked_ilog10().unwrap_or_default()
 }
 
 #[cfg(test)]
